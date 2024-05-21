@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import get_async_session
 
@@ -10,7 +10,7 @@ from .service import (
     delete_author_by_id,
 )
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks, UploadFile, File
 
 from src.models import Author
 from .schemas import AuthorCreateSchema, AuthorUpdateSchema, AuthorBaseSchema
@@ -36,24 +36,30 @@ async def get_author(
     "",
 )
 async def create_author_route(
+    background_tasks: BackgroundTasks,
     author_data: AuthorCreateSchema = Depends(AuthorCreateSchema.as_form),
     session: AsyncSession = Depends(get_async_session),
 ):
-    return await create_author(author_data, Author, session)
+    return await create_author(author_data, Author, session, background_tasks)
 
 
 @authors_router.put("/{author_id}", response_model=AuthorBaseSchema)
 async def update_author_by_id(
     author_id: int,
+    background_tasks: BackgroundTasks,
     author_data: AuthorUpdateSchema = Depends(AuthorUpdateSchema.as_form),
     session: AsyncSession = Depends(get_async_session),
+    photo: Annotated[UploadFile, File()] = None,
+
 ):
-    return await update_author(author_data, Author, session, author_id)
+    return await update_author(author_data, Author, session, author_id, background_tasks, photo)
 
 
 @authors_router.delete("/{author_id}")
 async def delete_author(
+    background_tasks: BackgroundTasks,
     author_id: int,
     session: AsyncSession = Depends(get_async_session),
+
 ):
-    return await delete_author_by_id(author_id, Author, session)
+    return await delete_author_by_id(background_tasks, author_id, Author, session)

@@ -41,3 +41,12 @@ ALLOW_HEADERS = [
     "Authorization",
 ]
 ORIGINS = ["*"]
+
+
+PHOTO_FORMATS = [
+    "image/webp",
+    "image/png",
+    "image/jpeg",
+]
+
+MAX_FILE_SIZE_MB = 3

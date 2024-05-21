@@ -15,6 +15,7 @@ class Author(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(length=50), nullable=False)
     email = Column(String(length=100), nullable=False)
+    photo = Column(String(500))
     posts = relationship("Post", back_populates="author")
 
 class Category(Base):

@@ -31,3 +31,13 @@ SWAGGER_PARAMETERS = {
     "displayRequestDuration": True,
 }
 
+
+ALLOW_METHODS = ["GET", "POST", "PUT", "OPTIONS", "DELETE", "PATCH"]
+ALLOW_HEADERS = [
+    "Content-Type",
+    "Set-Cookie",
+    "Access-Control-Allow-Headers",
+    "Access-Control-Allow-Origin",
+    "Authorization",
+]
+ORIGINS = ["*"]

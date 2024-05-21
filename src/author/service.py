@@ -1,10 +1,11 @@
 from typing import Type
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import Base
-from sqlalchemy import select
+from sqlalchemy import select, update, delete
 from sqlalchemy.orm.exc import NoResultFound
-from fastapi import HTTPException, status
-from .exceptions import NO_DATA_FOUND, SERVER_ERROR
+from fastapi import HTTPException, status, Response
+from .exceptions import NO_DATA_FOUND, SERVER_ERROR, NO_RECORD, SUCCESS_DELETE
+from .schemas import AuthorCreateSchema, AuthorUpdateSchema
 
 
 async def get_all_authors(
@@ -12,7 +13,7 @@ async def get_all_authors(
     session: AsyncSession,
 ):
     try:
-        query = select(model)
+        query = select(model).order_by(model.id)
         author = await session.execute(query)
         response = author.scalars().all()
         if not response:
@@ -24,3 +25,79 @@ async def get_all_authors(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=SERVER_ERROR
         )
+
+
+async def get_author_by_id(model: Type[Base], session: AsyncSession, id: int):
+    query = select(model).where(model.id == id)
+    result = await session.execute(query)
+    response = result.scalars().first()
+    if not response:
+        raise HTTPException(status_code=404, detail=NO_DATA_FOUND)
+    return response
+
+
+async def create_author(
+    author_data: AuthorCreateSchema,
+    model: Type[Base],
+    session: AsyncSession,
+):
+    try:
+        author = model(name=author_data.name, email=author_data.email)
+        session.add(author)
+        await session.commit()
+        return author
+    except Exception as e:
+        await session.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
+
+
+async def update_author(
+    author_data: AuthorUpdateSchema,
+    model: Type[Base],
+    session: AsyncSession,
+    author_id: int,
+):
+    query = select(model).where(model.id == author_id)
+    result = await session.execute(query)
+    record = result.scalars().first()
+    if not record:
+        raise HTTPException(status_code=404, detail=NO_DATA_FOUND)
+    update_data = author_data.model_dump(exclude_none=True)
+    if not update_data:
+        return Response(status_code=204)
+    try:
+        query = (
+            update(model)
+            .where(model.id == author_id)
+            .values(**update_data)
+            .returning(model)
+        )
+        result = await session.execute(query)
+        await session.commit()
+        return result.scalars().first()
+    except:
+        raise HTTPException(status_code=500, detail=SERVER_ERROR)
+
+
+async def delete_author_by_id(
+    author_id: int,
+    model: Type[Base],
+    session: AsyncSession,
+):
+    query = select(model).where(model.id == author_id)
+    result = await session.execute(query)
+    record = result.scalars().first()
+    if not record:
+        raise HTTPException(status_code=404, detail=NO_RECORD)
+
+    try:
+        query = delete(model).where(model.id == author_id)
+        await session.execute(query)
+        await session.commit()
+        return {"message": SUCCESS_DELETE % author_id}
+
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail=SERVER_ERROR)

@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Text
+from datetime import datetime
+from sqlalchemy import Column, Integer, String, ForeignKey, Text, DateTime, func
 from sqlalchemy.orm import relationship
 from src.database import Base
 
@@ -9,6 +10,7 @@ class Post(Base):
     content: str = Column(Text(length=2000), nullable=False)
     author_id: int = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"))
     category_id: int = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"))
+    created_at: datetime = Column(DateTime, default=func.now())
 
     author = relationship("Author", back_populates="posts")
     category = relationship("Category", back_populates="posts")

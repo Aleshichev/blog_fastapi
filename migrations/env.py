@@ -6,10 +6,11 @@ from alembic import context
 
 from src.database import Base
 from src.config import settings
-from src.author.models import *
-from src.category.models import *
-from src.post.models import *
-from src.tag.models import *
+# from src.author.models import *
+# from src.category.models import *
+# from src.post.models import *
+# from src.tag.models import *
+from src.models import *
 
 
 

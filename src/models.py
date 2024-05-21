@@ -12,34 +12,33 @@ post_tags = Table(
 
 class Author(Base):
     __tablename__ = "authors"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(length=50), nullable=False)
-    email = Column(String(length=100), nullable=False)
+    id: int = Column(Integer, primary_key=True, index=True)
+    name: str = Column(String(length=50), nullable=False)
+    email: str = Column(String(length=100), nullable=False)
     photo = Column(String(500))
     posts = relationship("Post", back_populates="author")
 
 class Category(Base):
     __tablename__ = "categories"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(length=100), index=True, nullable=False)
-    description = Column(String(length=255), nullable=True)
+    id: int = Column(Integer, primary_key=True, index=True)
+    name: str = Column(String(length=100), index=True, nullable=False)
+    description: str = Column(String(length=255), nullable=True)
     posts = relationship("Post", back_populates="category", cascade="all, delete-orphan")
 
 class Tag(Base):
     __tablename__ = "tags"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(length=50), nullable=False)
+    id: int = Column(Integer, primary_key=True, index=True)
+    name: str = Column(String(length=50), nullable=False)
     posts = relationship("Post", secondary="post_tags", back_populates="tags")
 
 class Post(Base):
     __tablename__ = "posts"
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(length=100), index=True, nullable=False)
-    content = Column(Text(length=2000), nullable=False)
-    author_id = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"))
-    category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"))
+    id: int = Column(Integer, primary_key=True, index=True)
+    title: str = Column(String(length=100), index=True, nullable=False)
+    content: str = Column(Text(length=2000), nullable=False)
+    author_id: int = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"))
+    category_id: int = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"))
     created_at: datetime = Column(DateTime, default=func.now())
-    updated_at: datetime = Column(DateTime, default=func.now(), onupdate=func.now())
     
     author = relationship("Author", back_populates="posts")
     category = relationship("Category", back_populates="posts")

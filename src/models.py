@@ -35,7 +35,7 @@ class Post(Base):
     __tablename__ = "posts"
     id: int = Column(Integer, primary_key=True, index=True)
     title: str = Column(String(length=100), index=True, nullable=False, unique=True)
-    content: str = Column(Text(length=2000), nullable=False)
+    content: str = Column(Text, nullable=False)
     author_id: int = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"))
     category_id: int = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"))
     created_at: datetime = Column(DateTime, default=func.now())

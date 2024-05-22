@@ -29,6 +29,7 @@ SWAGGER_PARAMETERS = {
     "docExpansion": "none",
     "persistAuthorization": True,
     "displayRequestDuration": True,
+    "parameterDescriptions": True
 }
 
 

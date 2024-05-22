@@ -7,7 +7,7 @@ from .config import (
 from sqladmin import Admin
 from src.author.routers import authors_router
 
-# from src.post.routers import router as post_router
+from src.post.routers import posts_router
 from src.category.routers import categories_router
 from src.tag.routers import tags_router
 
@@ -20,6 +20,7 @@ api_routers = [
     authors_router,
     tags_router,
     categories_router,
+    posts_router,
 ]
 
 

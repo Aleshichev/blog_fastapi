@@ -50,9 +50,10 @@ async def update_author_by_id(
     author_data: AuthorUpdateSchema = Depends(AuthorUpdateSchema.as_form),
     session: AsyncSession = Depends(get_async_session),
     photo: Annotated[UploadFile, File()] = None,
-
 ):
-    return await update_author(author_data, Author, session, author_id, background_tasks, photo)
+    return await update_author(
+        author_data, Author, session, author_id, background_tasks, photo
+    )
 
 
 @authors_router.delete("/{author_id}")
@@ -60,6 +61,5 @@ async def delete_author(
     background_tasks: BackgroundTasks,
     author_id: int,
     session: AsyncSession = Depends(get_async_session),
-
 ):
     return await delete_author_by_id(background_tasks, author_id, Author, session)

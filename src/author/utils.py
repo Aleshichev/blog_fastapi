@@ -7,8 +7,9 @@ from fastapi import HTTPException, UploadFile, BackgroundTasks
 
 
 from src.database import Base
-from .exceptions import  INVALID_PHOTO, OVERSIZE_FILE
-from src.config import  PHOTO_FORMATS, MAX_FILE_SIZE_MB
+from .exceptions import INVALID_PHOTO, OVERSIZE_FILE
+from src.config import PHOTO_FORMATS, MAX_FILE_SIZE_MB
+
 
 async def save_photo(
     file: UploadFile,
@@ -24,9 +25,11 @@ async def save_photo(
     if file.size > MAX_FILE_SIZE_MB * 1024 * 1024:
         raise HTTPException(status_code=413, detail=OVERSIZE_FILE)
 
-    folder_path = os.path.join("static", "media", model.__tablename__.lower().replace(" ", "_"))
+    folder_path = os.path.join(
+        "static", "media", model.__tablename__.lower().replace(" ", "_")
+    )
     file_extension = file.filename.split(".")[-1]
-    file_name = f'{uuid4().hex}.{file_extension}'
+    file_name = f"{uuid4().hex}.{file_extension}"
     file_path = os.path.join(folder_path, file_name)
 
     try:

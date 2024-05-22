@@ -1,5 +1,4 @@
 from typing import Type, Optional
-import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.database import Base
 from sqlalchemy import select, update, delete
@@ -8,6 +7,7 @@ from fastapi import HTTPException, status, Response, UploadFile, File, Backgroun
 from .exceptions import NO_DATA_FOUND, SERVER_ERROR, NO_RECORD, SUCCESS_DELETE
 from .schemas import AuthorCreateSchema, AuthorUpdateSchema
 from src.author.utils import save_photo, update_photo, delete_photo
+
 
 async def get_all_authors(
     model: Type[Base],
@@ -43,15 +43,13 @@ async def create_author(
     session: AsyncSession,
     background_tasks: BackgroundTasks,
 ):
-    # file.filename = f"{uuid.uuid4()}.jpg"
-    # contents = await file.read()
-    
-    # with open(f"{IMAGEDIR}{file.filename}", "wb") as f:
-    #     f.write(contents)
+
     author_data.photo = await save_photo(author_data.photo, model, background_tasks)
 
     try:
-        author = model(name=author_data.name, email=author_data.email, photo=author_data.photo)
+        author = model(
+            name=author_data.name, email=author_data.email, photo=author_data.photo
+        )
         session.add(author)
         await session.commit()
         return author
@@ -60,6 +58,7 @@ async def create_author(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         )
+
 
 async def update_author(
     author_data: AuthorUpdateSchema,

@@ -14,27 +14,27 @@ class Author(Base):
     __tablename__ = "authors"
     id: int = Column(Integer, primary_key=True, index=True)
     name: str = Column(String(length=50), nullable=False)
-    email: str = Column(String(length=100), nullable=False)
+    email: str = Column(String(length=100), nullable=False, unique=True) 
     photo = Column(String(500))
     posts = relationship("Post", back_populates="author")
 
 class Category(Base):
     __tablename__ = "categories"
     id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(length=100), index=True, nullable=False)
+    name: str = Column(String(length=100), index=True, nullable=False, unique=True)
     description: str = Column(String(length=255), nullable=True)
     posts = relationship("Post", back_populates="category", cascade="all, delete-orphan")
 
 class Tag(Base):
     __tablename__ = "tags"
     id: int = Column(Integer, primary_key=True, index=True)
-    name: str = Column(String(length=50), nullable=False)
+    name: str = Column(String(length=50), nullable=False, unique=True)
     posts = relationship("Post", secondary="post_tags", back_populates="tags")
 
 class Post(Base):
     __tablename__ = "posts"
     id: int = Column(Integer, primary_key=True, index=True)
-    title: str = Column(String(length=100), index=True, nullable=False)
+    title: str = Column(String(length=100), index=True, nullable=False, unique=True)
     content: str = Column(Text(length=2000), nullable=False)
     author_id: int = Column(Integer, ForeignKey("authors.id", ondelete="CASCADE"))
     category_id: int = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE"))

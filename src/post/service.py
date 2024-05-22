@@ -11,7 +11,6 @@ from .schemas import PostCreateSchema, PostPatchSchema, PostTagCreatedSchema, Ta
 from src.models import post_tags
 
 
-# Метод PATCH для обновления поста
 async def get_all_posts(
     model: Type[Base],
     session: AsyncSession,
@@ -125,12 +124,16 @@ async def delete_post_by_id(
     model: Type[Base],
     session: AsyncSession,
 ):
+    query = select(model).where(model.id == post_id)
+    result = await session.execute(query)
+    record = result.scalars().first()
+    if not record:
+        raise HTTPException(status_code=404, detail=NO_RECORD)
+    
     try:
-        # Удаляем пост и связанные с ним теги из базы данных
         await session.execute(post_tags.delete().where(post_tags.c.post_id == post_id))
         await session.execute(model.__table__.delete().where(model.id == post_id))
         
-        # Фиксируем изменения
         await session.commit()
         
         return {"detail": "Post and associated tags deleted successfully"}

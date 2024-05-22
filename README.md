@@ -31,28 +31,32 @@
 
 ##### 2) Создать виртуальное окружение
 
-    python -m venv venv
+    cd blog_fastapi
+    python3 -m venv venv
     
 ##### 3) Активировать виртуальное окружение
 
+    source venv/bin/activate
 
 ##### 4) Устанавливить зависимости:
 
     pip install -r requirements.txt
 
-##### 5) Запустить Docker 
+##### 5) Создать файл .env 
+
+##### 6) Запустить Docker 
     
     make build
 
-##### 6) Выполнить команду для выполнения миграций
+##### 7) Выполнить команду для выполнения миграций
 
     alembic upgrade head
     
-##### 7) Запустить сервер
+##### 8) Запустить сервер
 
-    uvicorn main:app --reload
+    make start
     
-##### 8) Перейти по адресу
+##### 9) Перейти по адресу
 
     http://127.0.0.1:8000/docs
     
